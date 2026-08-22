@@ -4,7 +4,9 @@ Interactive Streamlit dashboard for retail sales — auto-cleans newly uploaded
 data, visualizes key business metrics, and forecasts future revenue.
 
 ## Live Demo
-[Add your Streamlit Cloud link here after deploying]
+## Live Demo
+
+🚀 **[Open the Retail Sales Analytics Dashboard](https://retail-salesdashboard.streamlit.app/)**
 
 ## Features
 - **Auto-cleaning pipeline** for newly uploaded sales data — handles missing
