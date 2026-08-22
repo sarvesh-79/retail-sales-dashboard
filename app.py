@@ -1,47 +1,42 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import os
 
 from pipeline import clean_data, get_monthly_revenue, forecast_revenue, validate_columns
 
 st.set_page_config(page_title="Retail Sales Dashboard", layout="wide")
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 @st.cache_data
 def load_default_data():
-    df = pd.read_csv("retail_sales_dataset.csv")  # CSV sits in the same folder as app.py
+    csv_path = os.path.join(BASE_DIR, "retail_sales_dataset.csv")  # looks next to app.py itself, not the terminal's folder
+    df = pd.read_csv(csv_path)
     return clean_data(df)
-uploaded_file = st.file_uploader(
-    "retail_sales_dataset.csv",
-    type=["csv"]
-)
+
 
 # ---------------------------------------------------------
+# Sidebar — choose data source
+# ---------------------------------------------------------
+st.sidebar.title("Data Source")
+uploaded_file = st.sidebar.file_uploader("Upload new sales data (CSV)", type=["csv"])
+
 if uploaded_file is not None:
     raw_df = pd.read_csv(uploaded_file)
     df, report = clean_data(raw_df)
 
     missing_cols = validate_columns(df)
-
     if missing_cols:
         st.sidebar.error(
-            f"Uploaded file is missing required columns: "
-            f"{', '.join(missing_cols)}. "
+            f"Uploaded file is missing required columns: {', '.join(missing_cols)}. "
             "Showing the default dataset instead."
         )
-
         df, report = load_default_data()
-
     else:
-        st.sidebar.success(
-            f"{report['rows_received']} rows → "
-            f"{report['rows_after_cleaning']} after cleaning"
-        )
-
-        st.sidebar.write(
-            f"Duplicates removed: {report['duplicates_removed']}"
-        )
-
+        st.sidebar.success(f"{report['rows_received']} rows → {report['rows_after_cleaning']} after cleaning")
+        st.sidebar.write(f"Duplicates removed: {report['duplicates_removed']}")
 else:
     df, report = load_default_data()
     st.sidebar.info("Using default dataset")
